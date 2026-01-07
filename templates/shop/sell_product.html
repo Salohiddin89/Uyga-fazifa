@@ -1,0 +1,165 @@
+<!-- templates/shop/sell_product.html -->
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}Mahsulot Sotish - {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1 class="page-title">
+            <i class="fas fa-shopping-cart"></i> Mahsulot Sotish
+        </h1>
+
+        <div class="card-custom p-4">
+            {% if products %}
+            <form method="post" id="sellForm">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.product.id_for_label }}" class="form-label">
+                        <i class="fas fa-box"></i> {{ form.product.label }}
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-list"></i></span>
+                        {{ form.product }}
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        <i class="fas fa-info-circle"></i> Faqat omborda mavjud mahsulotlar ko'rsatiladi
+                    </small>
+                    {% if form.product.errors %}
+                    <div class="text-danger mt-1">{{ form.product.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.quantity.id_for_label }}" class="form-label">
+                        <i class="fas fa-balance-scale"></i> {{ form.quantity.label }}
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-cubes"></i></span>
+                        <input type="text" name="quantity" class="form-control" placeholder="Miqdori" id="id_quantity"
+                            data-format="quantity" value="{{ form.quantity.value|default:''|format_price_input }}"
+                            required min="1">
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        <i class="fas fa-exclamation-circle"></i> Omborda mavjud miqdordan ko'p sotish mumkin emas
+                    </small>
+                    {% if form.quantity.errors %}
+                    <div class="text-danger mt-1">{{ form.quantity.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.customer_name.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> {{ form.customer_name.label }}
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                        {{ form.customer_name }}
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        <i class="fas fa-info-circle"></i> Mijoz ismi ixtiyoriy. Agar kiritmasangiz, "Noma'lum" deb
+                        saqlanadi
+                    </small>
+                    {% if form.customer_name.errors %}
+                    <div class="text-danger mt-1">{{ form.customer_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Qo'shimcha ma'lumot -->
+                <div class="alert alert-info mb-4">
+                    <h6><i class="fas fa-info-circle"></i> Ma'lumot:</h6>
+                    <ul class="mb-0">
+                        <li>Mahsulot tanlaganingizda, uning narxi va qoldiq miqdori avtomatik hisoblanadi</li>
+                        <li>Omborda yetarli mahsulot bo'lmagan taqdirda, xato xabari chiqadi</li>
+                        <li>Sotuvni keyin bekor qilish mumkin</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success-custom flex-grow-1">
+                        <i class="fas fa-check me-2"></i> Mahsulotni Sotish
+                    </button>
+                    <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+                        <i class="fas fa-times me-2"></i> Bekor qilish
+                    </a>
+                </div>
+            </form>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <h5 class="alert-heading">Omborda mahsulot yo'q!</h5>
+                <p>Avval mahsulot qo'shing, keyin sotish mumkin bo'ladi.</p>
+                <hr>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'add_product' shop.id %}" class="btn btn-success-custom">
+                        <i class="fas fa-plus-circle me-2"></i> Mahsulot Qo'shish
+                    </a>
+                    <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+                        <i class="fas fa-arrow-left me-2"></i> Do'konga Qaytish
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- JavaScript: Mahsulot tanlanganda miqdor chegarasini o'rnatish -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const productSelect = document.getElementById('id_product');
+                const quantityInput = document.getElementById('id_quantity');
+
+                // Mahsulot tanlanganda
+                productSelect.addEventListener('change', function () {
+                    const selectedOption = this.options[this.selectedIndex];
+                    if (selectedOption && selectedOption.value) {
+                        // Ombordagi miqdorni olish (bu yerda siz backenddan ma'lumot olishingiz kerak)
+                        // Hozircha faqat placeholder
+                        quantityInput.placeholder = "Maksimal miqdor...";
+                        quantityInput.max = ""; // Bu yerda max qiymatni o'rnatishingiz kerak
+                    }
+                });
+
+                // Real-time formatlash
+                quantityInput.addEventListener('input', function () {
+                    let value = this.value.replace(/[^\d]/g, '');
+                    if (value) {
+                        value = parseInt(value).toLocaleString('ru-RU').replace(/,/g, ' ');
+                        this.value = value;
+                    }
+                });
+            });
+        </script>
+
+        <style>
+            .input-group-text {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                min-width: 45px;
+                justify-content: center;
+            }
+
+            select.form-control,
+            input.form-control {
+                border-radius: 0 8px 8px 0 !important;
+            }
+
+            .form-label {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 8px;
+            }
+
+            .alert ul {
+                padding-left: 20px;
+            }
+
+            .alert ul li {
+                margin-bottom: 5px;
+            }
+        </style>
+    </div>
+</div>
+{% endblock %}

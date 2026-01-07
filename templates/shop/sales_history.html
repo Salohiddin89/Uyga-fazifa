@@ -1,0 +1,161 @@
+<!-- templates/shop/sales_history.html -->
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}Sotuvlar Tarixi - {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        <i class="fas fa-history"></i> Sotuvlar Tarixi
+    </h1>
+    <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+        <i class="fas fa-arrow-left"></i> Orqaga
+    </a>
+</div>
+
+<!-- TO'LIQ STATISTIKA -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ total_sales|format_price_with_currency }}</h3>
+                    <p><i class="fas fa-money-bill-wave"></i> Jami Sotuv</p>
+                    <small style="opacity: 0.9;">{{ total_sales_quantity|format_quantity }} dona</small>
+                </div>
+                <i class="fas fa-chart-line fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ total_cancelled|format_price_with_currency }}</h3>
+                    <p><i class="fas fa-times-circle"></i> Bekor qilingan</p>
+                    <small style="opacity: 0.9;">{{ cancelled_quantity|format_quantity }} dona</small>
+                </div>
+                <i class="fas fa-ban fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ net_sales|format_price_with_currency }}</h3>
+                    <p><i class="fas fa-calculator"></i> Sof Sotuv</p>
+                    <small style="opacity: 0.9;">Toza foyda</small>
+                </div>
+                <i class="fas fa-check-circle fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ sales.count|format_quantity }}</h3>
+                    <p><i class="fas fa-receipt"></i> Jami Operatsiya</p>
+                    <small style="opacity: 0.9;">Barcha sotuvlar</small>
+                </div>
+                <i class="fas fa-shopping-bag fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sotuvlar ro'yxati -->
+{% if sales %}
+<div class="card-custom p-3">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sana</th>
+                    <th>Mahsulot</th>
+                    <th>Miqdor</th>
+                    <th>Narxi</th>
+                    <th>Jami</th>
+                    <th>Mijoz</th>
+                    <th>Kassir</th>
+                    <th>Holat</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                <tr {% if sale.is_cancelled %}class="text-muted" style="opacity: 0.7;" {% endif %}>
+                    <td><strong>#{{ sale.id }}</strong></td>
+                    <td>{{ sale.created_at|date:"d.m.Y H:i" }}</td>
+                    <td class="fw-bold">{{ sale.product.name }}</td>
+                    <td>
+                        <span class="badge bg-info">{{ sale.quantity|format_quantity }}</span>
+                    </td>
+                    <td>{{ sale.unit_price|format_price_with_currency }}</td>
+                    <td class="fw-bold">{{ sale.total_amount|format_price_with_currency }}</td>
+                    <td>{{ sale.customer_name|default:"-" }}</td>
+                    <td>
+                        <small>
+                            <i class="fas fa-user"></i> {{ sale.cashier.username }}
+                        </small>
+                    </td>
+                    <td>
+                        {% if sale.is_cancelled %}
+                        {% if sale.restored_at %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-redo"></i> Qayta tiklandi
+                        </span>
+                        <br>
+                        <small class="text-muted">
+                            {{ sale.restored_by.username }}<br>
+                            {{ sale.restored_at|date:"d.m.Y H:i" }}
+                        </small>
+                        {% else %}
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times"></i> Bekor qilingan
+                        </span>
+                        <br>
+                        <small class="text-muted">
+                            {{ sale.cancelled_by.username }}<br>
+                            {{ sale.cancelled_at|date:"d.m.Y H:i" }}
+                        </small>
+                        {% endif %}
+                        {% else %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-check"></i> Sotilgan
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not sale.is_cancelled %}
+                        <a href="{% url 'cancel_sale' sale.id %}" class="btn btn-sm btn-danger-custom">
+                            <i class="fas fa-times"></i> Bekor
+                        </a>
+                        {% else %}
+                        {% if is_owner and not sale.restored_at %}
+                        <a href="{% url 'restore_sale' sale.id %}" class="btn btn-sm btn-success-custom">
+                            <i class="fas fa-redo"></i> Qayta tiklash
+                        </a>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> Hozircha sotuvlar yo'q.
+</div>
+{% endif %}
+{% endblock %}

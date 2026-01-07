@@ -1,0 +1,240 @@
+<!-- templates/shop/shop_detail.html -->
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}{{ shop.name }} - ShopControl{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        <i class="fas fa-store"></i> {{ shop.name }}
+    </h1>
+    <div>
+        {% if is_owner %}
+        <a href="{% url 'shop_settings' shop.id %}" class="btn btn-secondary-custom">
+            <i class="fas fa-cog"></i> Sozlamalar
+        </a>
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn btn-secondary-custom">
+            <i class="fas fa-arrow-left"></i> Orqaga
+        </a>
+    </div>
+</div>
+
+<!-- TO'LIQ STATISTIKA -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ total_products_count|format_quantity }}</h3>
+                    <p><i class="fas fa-box"></i> Mahsulot Turlari</p>
+                </div>
+                <i class="fas fa-boxes fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ total_products_quantity|format_quantity }}</h3>
+                    <p><i class="fas fa-cubes"></i> Jami Dona (Ombor)</p>
+                </div>
+                <i class="fas fa-warehouse fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ total_sales|format_price_with_currency }}</h3>
+                    <p><i class="fas fa-dollar-sign"></i> Jami Sotuv</p>
+                    <small style="opacity: 0.9;">{{ total_sales_quantity|format_quantity }} sotildi</small>
+                </div>
+                <i class="fas fa-chart-line fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="stat-amount">{{ remaining_value|format_price_with_currency }}</h3>
+                    <p><i class="fas fa-coins"></i> Qolgan Qiymat</p>
+                    <small style="opacity: 0.9;">Ombordagi mahsulotlar</small>
+                </div>
+                <i class="fas fa-money-bill-wave fa-3x" style="opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Qo'shimcha Statistika -->
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card-custom p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ total_cancelled|format_price_with_currency }}</h5>
+                    <p class="text-muted mb-0"><i class="fas fa-times-circle text-danger"></i> Bekor qilingan</p>
+                    <small class="text-muted">{{ cancelled_quantity|format_quantity }} dona</small>
+                </div>
+                <div class="text-danger" style="font-size: 2rem;">
+                    <i class="fas fa-ban"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card-custom p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ net_sales|format_price_with_currency }}</h5>
+                    <p class="text-muted mb-0"><i class="fas fa-calculator text-success"></i> Sof Sotuv</p>
+                    <small class="text-muted">Bekor qilingan ayrilgan</small>
+                </div>
+                <div class="text-success" style="font-size: 2rem;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card-custom p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ shop.approved_date|date:"d.m.Y" }}</h5>
+                    <p class="text-muted mb-0"><i class="fas fa-calendar-check text-primary"></i> Ochilgan Sana</p>
+                    <small class="text-muted">{{ shop.category.name }}</small>
+                </div>
+                <div class="text-primary" style="font-size: 2rem;">
+                    <i class="fas fa-store"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tez tugmalar -->
+<div class="row mb-4">
+    {% if is_owner or staff_position.role == 'admin' %}
+    <div class="col-md-3 mb-3">
+        <a href="{% url 'add_product' shop.id %}" class="btn btn-success-custom w-100 py-3">
+            <i class="fas fa-plus-circle fa-2x mb-2 d-block"></i>
+            <div>Mahsulot Qo'shish</div>
+        </a>
+    </div>
+    {% endif %}
+
+    {% if is_owner or staff_position %}
+    <div class="col-md-3 mb-3">
+        <a href="{% url 'sell_product' shop.id %}" class="btn btn-primary-custom w-100 py-3">
+            <i class="fas fa-shopping-cart fa-2x mb-2 d-block"></i>
+            <div>Sotish</div>
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="col-md-3 mb-3">
+        <a href="{% url 'sales_history' shop.id %}" class="btn w-100 py-3 text-white"
+            style="background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);">
+            <i class="fas fa-history fa-2x mb-2 d-block"></i>
+            <div>Sotuvlar Tarixi</div>
+        </a>
+    </div>
+
+    {% if is_owner %}
+    <div class="col-md-3 mb-3">
+        <a href="{% url 'add_staff' shop.id %}" class="btn btn-secondary-custom w-100 py-3">
+            <i class="fas fa-users fa-2x mb-2 d-block"></i>
+            <div>Xodimlar</div>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Mahsulotlar ro'yxati -->
+<h3 class="mb-3"><i class="fas fa-box"></i> Mahsulotlar Ro'yxati</h3>
+
+{% if products %}
+<div class="card-custom p-3">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Rasm</th>
+                    <th>Nomi</th>
+                    <th>Kategoriya</th>
+                    <th>Narxi</th>
+                    <th>Qoldiq</th>
+                    <th>Qiymat</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                        {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center"
+                            style="width: 50px; height: 50px; border-radius: 8px;">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold">{{ product.name }}</td>
+                    <td>
+                        {% if product.category %}
+                        <span class="badge bg-info" style="font-size: 0.8rem;">
+                            {{ product.category.name }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="product-price">{{ product.price|format_price_with_currency }}</td>
+                    <td>
+                        {% if product.quantity > 10 %}
+                        <span class="badge bg-success" style="font-size: 0.9rem;">
+                            {{ product.get_display_quantity }}
+                        </span>
+                        {% elif product.quantity > 0 %}
+                        <span class="badge bg-warning" style="font-size: 0.9rem;">
+                            {{ product.get_display_quantity }}
+                        </span>
+                        {% else %}
+                        <span class="badge bg-danger" style="font-size: 0.9rem;">
+                            Tugagan
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold text-primary">
+                        {{ product.get_total_value|format_price_with_currency }}
+                    </td>
+                    <td>
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-primary-custom">
+                            <i class="fas fa-eye"></i> Ko'rish
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> Hozircha mahsulotlar yo'q. Birinchi mahsulotni qo'shing!
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,167 @@
+<!-- templates/shop/edit_product.html -->
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}Tahrirlash - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1 class="page-title">
+            <i class="fas fa-edit"></i> Mahsulotni Tahrirlash
+        </h1>
+
+        <div class="card-custom p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Hozirgi rasm -->
+                <div class="mb-4 text-center">
+                    <h6 class="mb-3"><i class="fas fa-image"></i> Hozirgi rasm:</h6>
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        style="width: 200px; height: 200px; object-fit: cover; border-radius: 15px; border: 3px solid #667eea;">
+                    {% else %}
+                    <div class="bg-gradient text-white d-flex align-items-center justify-content-center"
+                        style="width: 200px; height: 200px; margin: 0 auto; border-radius: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-box fa-4x"></i>
+                    </div>
+                    <small class="text-muted d-block mt-2">Rasm yuklanmagan</small>
+                    {% endif %}
+                </div>
+
+                <!-- Mahsulot nomi va kategoriya -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">
+                            <i class="fas fa-box"></i> {{ form.name.label }}
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                            {{ form.name }}
+                        </div>
+                        {% if form.name.errors %}
+                        <div class="text-danger mt-1">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="{{ form.category.id_for_label }}" class="form-label">
+                            <i class="fas fa-tags"></i> {{ form.category.label }}
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                            {{ form.category }}
+                        </div>
+                        {% if form.category.errors %}
+                        <div class="text-danger mt-1">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Yangi rasm -->
+                <div class="mb-3">
+                    <label for="{{ form.image.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i> {{ form.image.label }}
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-camera"></i></span>
+                        {{ form.image }}
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        <i class="fas fa-info-circle"></i> Yangi rasm yuklash uchun fayl tanlang
+                    </small>
+                    {% if form.image.errors %}
+                    <div class="text-danger mt-1">{{ form.image.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Narx va miqdor -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="{{ form.price.id_for_label }}" class="form-label">
+                            <i class="fas fa-tag"></i> {{ form.price.label }}
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
+                            <input type="text" name="price" class="form-control" placeholder="Narxi (so'm)"
+                                id="id_price" data-format="price"
+                                value="{{ form.price.value|default:''|format_price_input }}" required>
+                            <span class="input-group-text">so'm</span>
+                        </div> <small class="text-muted d-block mt-1">
+                            <i class="fas fa-exclamation-circle"></i> Narxni o'zgartiring
+                        </small>
+                        {% if form.price.errors %}
+                        <div class="text-danger mt-1">{{ form.price.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-balance-scale"></i> Miqdor
+                        </label>
+                        <div class="row g-2">
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-cubes"></i></span>
+                                    <input type="text" name="quantity" class="form-control" placeholder="Miqdori"
+                                        id="id_quantity" data-format="quantity"
+                                        value="{{ form.quantity.value|default:''|format_price_input }}" required>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-exclamation-circle"></i> Miqdorni oshirsangiz, kirim tarixiga
+                                    qo'shiladi
+                                </small>
+                                {% if form.quantity.errors %}
+                                <div class="text-danger mt-1">{{ form.quantity.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-ruler"></i></span>
+                                    {{ form.unit }}
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-exclamation-circle"></i> Birlik
+                                </small>
+                                {% if form.unit.errors %}
+                                <div class="text-danger mt-1">{{ form.unit.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tugmalar -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success-custom flex-grow-1">
+                        <i class="fas fa-save me-2"></i> O'zgarishlarni Saqlash
+                    </button>
+                    <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+                        <i class="fas fa-times me-2"></i> Bekor qilish
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+
+    select.form-control,
+    input.form-control {
+        border-radius: 0 8px 8px 0 !important;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %}

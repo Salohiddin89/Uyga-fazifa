@@ -1,0 +1,71 @@
+<!-- templates/shop/cancel_sale.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sotuvni Bekor Qilish - {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="page-title text-danger">
+            <i class="fas fa-times-circle"></i> Sotuvni Bekor Qilish
+        </h1>
+
+        <div class="card-custom p-4">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Diqqat!</strong> Bu sotuvni bekor qilishga ishonchingiz komilmi?
+            </div>
+
+            <div class="mb-4">
+                <table class="table table-borderless">
+                    <tr>
+                        <td width="40%" class="fw-bold">Sotuv ID:</td>
+                        <td>#{{ sale.id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Mahsulot:</td>
+                        <td>{{ sale.product.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Miqdor:</td>
+                        <td>{{ sale.quantity }} dona</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Narxi:</td>
+                        <td>{{ sale.unit_price|floatformat:0 }} so'm</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Jami Summa:</td>
+                        <td class="text-danger fw-bold">{{ sale.total_amount|floatformat:0 }} so'm</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Kassir:</td>
+                        <td>{{ sale.cashier.username }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Sana:</td>
+                        <td>{{ sale.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Bekor qilingach, {{ sale.quantity }} dona {{ sale.product.name }} omborda qaytadan paydo bo'ladi.
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger-custom">
+                        <i class="fas fa-times"></i> Ha, Bekor qilish
+                    </button>
+                    <a href="{% url 'sales_history' shop.id %}" class="btn btn-secondary-custom">
+                        <i class="fas fa-arrow-left"></i> Yo'q, Qaytish
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+<!-- templates/shop/restore_sale.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sotuvni Qayta Tiklash - {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="page-title text-success">
+            <i class="fas fa-redo"></i> Sotuvni Qayta Tiklash
+        </h1>
+
+        <div class="card-custom p-4">
+            <div class="alert alert-success">
+                <i class="fas fa-info-circle"></i>
+                <strong>Diqqat!</strong> Bu sotuvni qayta tiklashingiz mumkin.
+                Qayta tiklangandan so'ng, u yana sotilgan deb hisoblanadi.
+            </div>
+
+            <div class="mb-4">
+                <table class="table table-borderless">
+                    <tr>
+                        <td width="40%" class="fw-bold">Sotuv ID:</td>
+                        <td>#{{ sale.id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Mahsulot:</td>
+                        <td>{{ sale.product.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Miqdor:</td>
+                        <td>{{ sale.quantity }} dona</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Narxi:</td>
+                        <td>{{ sale.unit_price|floatformat:0 }} so'm</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Jami Summa:</td>
+                        <td class="text-success fw-bold">{{ sale.total_amount|floatformat:0 }} so'm</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Mijoz:</td>
+                        <td>{{ sale.customer_name|default:"Noma'lum" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Kassir:</td>
+                        <td>{{ sale.cashier.username }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Sotilgan Sana:</td>
+                        <td>{{ sale.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Bekor qilgan:</td>
+                        <td class="text-danger">{{ sale.cancelled_by.username }} ({{ sale.cancelled_at | date:"d.m.Y H:i"}})</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Qayta tiklangandan so'ng, {{ sale.quantity }} dona {{ sale.product.name }} ombordan chiqariladi.
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="restoration_reason" class="form-label">
+                        <i class="fas fa-comment"></i> Qayta tiklash sababi
+                    </label>
+                    <textarea name="restoration_reason" id="restoration_reason" class="form-control" rows="3"
+                        placeholder="Nima uchun qayta tiklamoqchisiz?"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success-custom">
+                        <i class="fas fa-redo"></i> Ha, Qayta tiklash
+                    </button>
+                    <a href="{% url 'sales_history' shop.id %}" class="btn btn-secondary-custom">
+                        <i class="fas fa-arrow-left"></i> Yo'q, Qaytish
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

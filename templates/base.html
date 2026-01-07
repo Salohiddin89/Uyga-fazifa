@@ -1,0 +1,584 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ShopControl{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* templates/base.html - CSS oxiriga qo'shing */
+
+        /* Miqdor birligi badge uchun */
+        .badge-unit {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        /* Option ichidagi formatlash uchun */
+        .option-with-unit {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .option-name {
+            flex: 1;
+        }
+
+        .option-price {
+            color: #28a745;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .option-quantity {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        /* Form select uchun */
+        select option {
+            padding: 8px !important;
+            font-size: 14px;
+        }
+
+        select option:checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .nav-link {
+            color: #333;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .content-wrapper {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            min-height: 70vh;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary-custom {
+            background: #6c757d;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-secondary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-success-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-danger-custom {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-danger-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .alert {
+            border-radius: 15px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            color: white;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .badge-custom {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+        }
+
+        .badge-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Narx formatlash uchun yangi stillar */
+        .price-amount {
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .price-currency {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-left: 2px;
+        }
+
+        .quantity-amount {
+            font-family: 'Inter', monospace;
+            font-weight: 500;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .product-price-old {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .stat-amount {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .stat-currency {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .stat-amount {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-store"></i> ShopControl
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home"></i> Asosiy
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            <i class="fas fa-user"></i> {{ user.username }}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout' %}" class="btn btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Chiqish
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i
+                class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- templates/base.html - JavaScript qismini yangilang -->
+
+    <script>
+        // Real-time formatlash
+        document.addEventListener('DOMContentLoaded', function () {
+            // Formatlash funksiyasi - 17 000 format
+            function formatNumber(number) {
+                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            }
+
+            // Kiritilgan qiymatni tozalash
+            function cleanNumberInput(value) {
+                // Barcha bo'shliq va vergullarni olib tashlash
+                return value.replace(/[,\s]/g, '');
+            }
+
+            // Barcha narxlarni formatlash (faqat ko'rsatish uchun)
+            document.querySelectorAll('.format-price').forEach(element => {
+                let value = element.textContent.trim();
+                value = cleanNumberInput(value);
+
+                if (/^\d+$/.test(value)) {
+                    let numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                        element.textContent = formatNumber(numValue);
+                    }
+                }
+            });
+
+            // Statistik kartalarni formatlash
+            document.querySelectorAll('.stat-amount').forEach(element => {
+                let text = element.textContent.trim();
+                let match = text.match(/([\d\s,]+)(.*)/);
+
+                if (match) {
+                    let number = cleanNumberInput(match[1]);
+                    let currency = match[2];
+
+                    if (/^\d+$/.test(number)) {
+                        let numValue = parseInt(number);
+                        if (!isNaN(numValue)) {
+                            element.textContent = formatNumber(numValue) + currency;
+                        }
+                    }
+                }
+            });
+
+            // Inputlar uchun real-time formatlash (NARX uchun)
+            document.querySelectorAll('input[data-format="price"]').forEach(input => {
+                input.addEventListener('input', function () {
+                    // Fokusda bo'lganda formatni olib tashlash
+                    let cursorPosition = this.selectionStart;
+                    let originalValue = this.value;
+
+                    // Tozalangan qiymat
+                    let cleanValue = cleanNumberInput(originalValue);
+
+                    // Faqat raqamlar qolsin
+                    cleanValue = cleanValue.replace(/[^\d]/g, '');
+
+                    if (!cleanValue) {
+                        this.value = '';
+                        return;
+                    }
+
+                    // Formatlash (bo'shliq bilan)
+                    let formattedValue = formatNumber(cleanValue);
+
+                    // Kursorni to'g'ri o'rniga qaytarish
+                    this.value = formattedValue;
+
+                    // Kursorni yangi o'ringa ko'chirish
+                    let newCursorPosition = cursorPosition;
+                    if (formattedValue.length !== originalValue.length) {
+                        // Agar format o'zgarsa, kursorni moslashtirish
+                        let diff = formattedValue.length - originalValue.length;
+                        newCursorPosition = cursorPosition + diff;
+
+                        // Chegaralarni tekshirish
+                        newCursorPosition = Math.max(0, Math.min(newCursorPosition, formattedValue.length));
+                    }
+
+                    this.setSelectionRange(newCursorPosition, newCursorPosition);
+                });
+
+                // Inputga kirishda (focus) formatni olib tashlash
+                input.addEventListener('focus', function () {
+                    let value = this.value;
+                    if (value) {
+                        this.value = cleanNumberInput(value);
+                    }
+                });
+
+                // Inputdan chiqishda (blur) formatlash
+                input.addEventListener('blur', function () {
+                    let value = this.value;
+                    if (value) {
+                        let cleanValue = cleanNumberInput(value);
+                        if (/^\d+$/.test(cleanValue)) {
+                            this.value = formatNumber(cleanValue);
+                        }
+                    }
+                });
+            });
+
+            // Miqdor inputlari uchun formatlash
+            document.querySelectorAll('input[data-format="quantity"]').forEach(input => {
+                input.addEventListener('input', function () {
+                    let value = this.value;
+                    let cleanValue = cleanNumberInput(value);
+
+                    // Faqat raqamlar qolsin
+                    cleanValue = cleanValue.replace(/[^\d]/g, '');
+
+                    if (!cleanValue) {
+                        this.value = '';
+                        return;
+                    }
+
+                    this.value = formatNumber(cleanValue);
+                });
+            });
+
+            // Form yuborilishidan oldin formatni olib tashlash
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function () {
+                    // Narx inputlarini tozalash
+                    this.querySelectorAll('input[data-format="price"]').forEach(input => {
+                        let value = input.value;
+                        if (value) {
+                            input.value = cleanNumberInput(value);
+                        }
+                    });
+
+                    // Miqdor inputlarini tozalash
+                    this.querySelectorAll('input[data-format="quantity"]').forEach(input => {
+                        let value = input.value;
+                        if (value) {
+                            input.value = cleanNumberInput(value);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

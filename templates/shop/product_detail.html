@@ -1,0 +1,188 @@
+<!-- templates/shop/product_detail.html -->
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}{{ product.name }} - ShopControl{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        <i class="fas fa-box"></i> {{ product.name }}
+    </h1>
+    <div>
+        {% if is_owner or staff_position.role == 'admin' %}
+        <a href="{% url 'edit_product' product.id %}" class="btn btn-warning text-white">
+            <i class="fas fa-edit"></i> Tahrirlash
+        </a>
+        {% endif %}
+        {% if is_owner %}
+        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger-custom">
+            <i class="fas fa-trash"></i> O'chirish
+        </a>
+        {% endif %}
+        <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+            <i class="fas fa-arrow-left"></i> Orqaga
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow"
+            style="width: 100%; height: 300px; object-fit: cover;">
+        {% else %}
+        <div class="bg-gradient text-white d-flex align-items-center justify-content-center rounded shadow"
+            style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fas fa-box fa-5x"></i>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="card-custom p-4 mb-3">
+            <h4 class="mb-3">Mahsulot Ma'lumotlari</h4>
+            <table class="table table-borderless">
+                <tr>
+                    <td width="30%" class="fw-bold">Nomi:</td>
+                    <td>{{ product.name }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Kategoriya:</td>
+                    <td>
+                        {% if product.category %}
+                        <span class="badge bg-info">{{ product.category.name }}</span>
+                        {% else %}
+                        <span class="text-muted">Kategoriya tanlanmagan</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Narxi:</td>
+                    <td class="product-price fs-5">{{ product.price|format_price_with_currency }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Miqdor:</td>
+                    <td>
+                        <span
+                            class="badge {% if product.quantity > 10 %}bg-success{% elif product.quantity > 0 %}bg-warning{% else %}bg-danger{% endif %} fs-6">
+                            {{ product.get_display_quantity }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Qo'shilgan:</td>
+                    <td>{{ product.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Umumiy qiymat:</td>
+                    <td class="text-primary fw-bold fs-5">
+                        {{ product.get_total_value|format_price_with_currency }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Statistika faqat owner uchun -->
+{% if is_owner %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3 class="stat-amount">{{ total_income|format_quantity }}</h3>
+            <p><i class="fas fa-arrow-down"></i> Jami Kirim</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <h3 class="stat-amount">{{ total_sold|format_quantity }}</h3>
+            <p><i class="fas fa-shopping-cart"></i> Jami Sotilgan</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <h3 class="stat-amount">{{ remaining|format_quantity }}</h3>
+            <p><i class="fas fa-box"></i> Qolgan</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);">
+            <h3 class="stat-amount">{{ total_revenue|format_price_with_currency }}</h3>
+            <p><i class="fas fa-money-bill-wave"></i> Jami Tushum</p>
+        </div>
+    </div>
+</div>
+
+<!-- Tarixlar -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <h4 class="mb-3"><i class="fas fa-arrow-down"></i> Kirim Tarixi</h4>
+        <div class="card-custom p-3">
+            {% if income_history %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Sana</th>
+                            <th>Miqdor</th>
+                            <th>Kim qo'shgan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for income in income_history %}
+                        <tr>
+                            <td>{{ income.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="fw-bold">+{{ income.quantity|format_quantity }}</td>
+                            <td>{{ income.added_by.username }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">Kirim tarixi yo'q</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <h4 class="mb-3"><i class="fas fa-shopping-cart"></i> Sotuv Tarixi</h4>
+        <div class="card-custom p-3">
+            {% if sales_history %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Sana</th>
+                            <th>Miqdor</th>
+                            <th>Summa</th>
+                            <th>Holat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales_history %}
+                        <tr {% if sale.is_cancelled %}class="text-decoration-line-through text-muted" {% endif %}>
+                            <td>{{ sale.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="fw-bold">{{ sale.quantity|format_quantity }}</td>
+                            <td>{{ sale.total_amount|format_price_with_currency }}</td>
+                            <td>
+                                {% if sale.is_cancelled %}
+                                <span class="badge bg-danger">Bekor qilingan</span>
+                                {% else %}
+                                <span class="badge bg-success">Sotilgan</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">Sotuv tarixi yo'q</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

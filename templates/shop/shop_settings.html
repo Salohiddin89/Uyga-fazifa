@@ -1,0 +1,266 @@
+<!-- templates/shop/shop_settings.html -->
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}Sozlamalar - {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        <i class="fas fa-cog"></i> Do'kon Sozlamalari
+    </h1>
+    <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+        <i class="fas fa-arrow-left"></i> Orqaga
+    </a>
+</div>
+
+<!-- TO'LIQ STATISTIKA -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card-custom p-3 text-center">
+            <div class="mb-2">
+                <i class="fas fa-box fa-3x text-primary"></i>
+            </div>
+            <h4 class="mb-1 fw-bold">{{ total_products|format_quantity }}</h4>
+            <p class="text-muted mb-0">Mahsulot Turlari</p>
+            <small class="text-muted">Jami mahsulotlar</small>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card-custom p-3 text-center">
+            <div class="mb-2">
+                <i class="fas fa-dollar-sign fa-3x text-success"></i>
+            </div>
+            <h4 class="mb-1 fw-bold text-success">{{ total_sales|format_price_with_currency }}</h4>
+            <p class="text-muted mb-0">Jami Sotuv</p>
+            <small class="text-muted">So'm</small>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card-custom p-3 text-center">
+            <div class="mb-2">
+                <i class="fas fa-times-circle fa-3x text-danger"></i>
+            </div>
+            <h4 class="mb-1 fw-bold text-danger">{{ total_cancelled|format_price_with_currency }}</h4>
+            <p class="text-muted mb-0">Bekor qilingan</p>
+            <small class="text-muted">So'm</small>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card-custom p-3 text-center">
+            <div class="mb-2">
+                <i class="fas fa-coins fa-3x text-warning"></i>
+            </div>
+            <h4 class="mb-1 fw-bold text-warning">{{ remaining_value|format_price_with_currency }}</h4>
+            <p class="text-muted mb-0">Qolgan Qiymat</p>
+            <small class="text-muted">Ombordagi mahsulotlar</small>
+        </div>
+    </div>
+</div>
+
+<!-- Sozlamalar Forması -->
+<div class="card-custom p-4">
+    <h4 class="mb-4">
+        <i class="fas fa-edit"></i> Do'kon Ma'lumotlarini Tahrirlash
+    </h4>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">
+                    <i class="fas fa-store"></i> {{ form.name.label }}
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="text-danger mt-1">
+                    <small>{{ form.name.errors }}</small>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.category.id_for_label }}" class="form-label">
+                    <i class="fas fa-tags"></i> {{ form.category.label }}
+                </label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                <div class="text-danger mt-1">
+                    <small>{{ form.category.errors }}</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                <i class="fas fa-phone"></i> {{ form.phone.label }}
+            </label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+            <div class="text-danger mt-1">
+                <small>{{ form.phone.errors }}</small>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.image.id_for_label }}" class="form-label">
+                <i class="fas fa-image"></i> {{ form.image.label }}
+            </label>
+
+            {% if shop.image %}
+            <div class="mb-3">
+                <img src="{{ shop.image.url }}" alt="{{ shop.name }}"
+                    style="width: 200px; height: 200px; object-fit: cover; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <div class="mt-2">
+                    <small class="text-muted">Hozirgi rasm</small>
+                </div>
+            </div>
+            {% endif %}
+
+            {{ form.image }}
+            <small class="text-muted d-block mt-1">
+                <i class="fas fa-info-circle"></i> Yangi rasm yuklash uchun fayl tanlang
+            </small>
+            {% if form.image.errors %}
+            <div class="text-danger mt-1">
+                <small>{{ form.image.errors }}</small>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label for="{{ form.description.id_for_label }}" class="form-label">
+                <i class="fas fa-comment-alt"></i> {{ form.description.label }}
+            </label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="text-danger mt-1">
+                <small>{{ form.description.errors }}</small>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success-custom">
+                <i class="fas fa-save"></i> O'zgarishlarni Saqlash
+            </button>
+            <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+                <i class="fas fa-times"></i> Bekor qilish
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Qo'shimcha Ma'lumotlar -->
+<div class="card-custom p-4 mt-4" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+    <h4 class="mb-4">
+        <i class="fas fa-info-circle"></i> Do'kon Ma'lumotlari
+    </h4>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                <div class="me-3">
+                    <i class="fas fa-calendar-check fa-2x text-primary"></i>
+                </div>
+                <div>
+                    <small class="text-muted">Tasdiqlangan Sana</small>
+                    <div class="fw-bold">{{ shop.approved_date|date:"d.m.Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                <div class="me-3">
+                    <i class="fas fa-calendar-plus fa-2x text-success"></i>
+                </div>
+                <div>
+                    <small class="text-muted">Yaratilgan Sana</small>
+                    <div class="fw-bold">{{ shop.created_at|date:"d.m.Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                <div class="me-3">
+                    <i class="fas fa-calendar-alt fa-2x text-warning"></i>
+                </div>
+                <div>
+                    <small class="text-muted">Oxirgi Yangilanish</small>
+                    <div class="fw-bold">{{ shop.updated_at|date:"d.m.Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                <div class="me-3">
+                    <i class="fas fa-user-crown fa-2x text-danger"></i>
+                </div>
+                <div>
+                    <small class="text-muted">Egasi</small>
+                    <div class="fw-bold">{{ shop.owner.username }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Xavfli Zona -->
+<div class="card-custom p-4 mt-4" style="border: 2px solid #dc3545;">
+    <h4 class="mb-3 text-danger">
+        <i class="fas fa-exclamation-triangle"></i> Xavfli Zona
+    </h4>
+
+    <div class="alert alert-danger">
+        <i class="fas fa-info-circle"></i>
+        <strong>Diqqat!</strong> Bu amallar qaytarilmaydi. Ehtiyot bo'ling!
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="p-3 bg-light rounded">
+                <h6 class="mb-2">
+                    <i class="fas fa-power-off"></i> Do'konni O'chirish
+                </h6>
+                <p class="text-muted mb-3">
+                    Do'konni vaqtincha o'chirish. Barcha ma'lumotlar saqlanadi, lekin foydalanuvchilar kirisha olmaydi.
+                </p>
+                {% if shop.is_active %}
+                <button class="btn btn-warning" disabled>
+                    <i class="fas fa-pause"></i> Vaqtincha To'xtatish (Tez orada)
+                </button>
+                {% else %}
+                <button class="btn btn-success" disabled>
+                    <i class="fas fa-play"></i> Qayta Faollashtirish (Tez orada)
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+    }
+</style>
+{% endblock %}

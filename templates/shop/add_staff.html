@@ -1,0 +1,118 @@
+<!-- templates/shop/add_staff.html -->
+{% extends 'base.html' %}
+
+{% block title %}Xodimlar - {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        <i class="fas fa-users"></i> Xodimlarni Boshqarish
+    </h1>
+    <a href="{% url 'shop_detail' shop.id %}" class="btn btn-secondary-custom">
+        <i class="fas fa-arrow-left"></i> Orqaga
+    </a>
+</div>
+
+<div class="row">
+    <!-- Xodim qo'shish formasi -->
+    <div class="col-md-5 mb-4">
+        <div class="card-custom p-4">
+            <h4 class="mb-3"><i class="fas fa-user-plus"></i> Yangi Xodim Qo'shish</h4>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> {{ form.username.label }}
+                    </label>
+                    {{ form.username }}
+                    <small class="text-muted">Xodim bu login bilan kirar</small>
+                    {% if form.username.errors %}
+                    <div class="text-danger mt-1">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">
+                        <i class="fas fa-lock"></i> {{ form.password.label }}
+                    </label>
+                    {{ form.password }}
+                    <small class="text-muted">Xodimga bu parolni ayting</small>
+                    {% if form.password.errors %}
+                    <div class="text-danger mt-1">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.role.id_for_label }}" class="form-label">
+                        <i class="fas fa-briefcase"></i> {{ form.role.label }}
+                    </label>
+                    {{ form.role }}
+                    <small class="text-muted d-block mt-2">
+                        <strong>Administrator:</strong> Mahsulot qo'sha oladi, tahrirlaydi<br>
+                        <strong>Kassir:</strong> Faqat sotuv qiladi, bekor qiladi
+                    </small>
+                    {% if form.role.errors %}
+                    <div class="text-danger mt-1">{{ form.role.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-success-custom w-100">
+                    <i class="fas fa-user-plus"></i> Qo'shish
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Xodimlar ro'yxati -->
+    <div class="col-md-7">
+        <div class="card-custom p-4">
+            <h4 class="mb-3"><i class="fas fa-users"></i> Hozirgi Xodimlar ({{ staff_list.count }})</h4>
+
+            {% if staff_list %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Login</th>
+                            <th>Lavozim</th>
+                            <th>Qo'shilgan</th>
+                            <th>Kim qo'shgan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff in staff_list %}
+                        <tr>
+                            <td class="fw-bold">
+                                <i class="fas fa-user-circle"></i> {{ staff.user.username }}
+                            </td>
+                            <td>
+                                {% if staff.role == 'admin' %}
+                                <span class="badge badge-custom badge-warning">
+                                    <i class="fas fa-user-cog"></i> Administrator
+                                </span>
+                                {% else %}
+                                <span class="badge badge-custom badge-danger">
+                                    <i class="fas fa-cash-register"></i> Kassir
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ staff.created_at|date:"d.m.Y" }}</td>
+                            <td>{{ staff.added_by.username }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle"></i> Hozircha qo'shilgan xodimlar yo'q.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
