@@ -311,7 +311,9 @@ class Sale(models.Model):
         blank=True,
         related_name="cancelled_sales",
     )
-    cancelled_at = (models.DateTimeField(null=True, blank=True),)
+    cancelled_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="Bekor qilingan sana"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     restored_by = models.ForeignKey(
         User,
