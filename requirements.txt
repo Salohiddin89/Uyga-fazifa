@@ -2,3 +2,4 @@ django
 pillow
 requests
 gunicorn
+aiohttp
